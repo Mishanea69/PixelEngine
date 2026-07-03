@@ -20,6 +20,15 @@ FetchContent_MakeAvailable(SDL3)
 
 add_executable(PixelEngine
     game/main.cpp
+    engine/core/Engine.cpp
+    engine/core/Time.cpp
+    engine/core/states/BootState.cpp
+    engine/core/states/ShutDownState.cpp
+    engine/core/states/RunningState.cpp
+)
+
+target_include_directories(PixelEngine PRIVATE
+    ${CMAKE_SOURCE_DIR}/engine
 )
 
 target_link_libraries(PixelEngine PRIVATE SDL3::SDL3)
