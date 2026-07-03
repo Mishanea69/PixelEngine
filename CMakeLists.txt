@@ -23,3 +23,9 @@ add_executable(PixelEngine
 )
 
 target_link_libraries(PixelEngine PRIVATE SDL3::SDL3)
+
+add_custom_command(TARGET PixelEngine POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        $<TARGET_FILE:SDL3::SDL3>
+        $<TARGET_FILE_DIR:PixelEngine>
+)
