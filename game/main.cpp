@@ -2,24 +2,42 @@
 #include <SDL3/SDL.h>
 #include <memory>
 
-bool running = true;
+void LogSDLError(const char* msg) {
+    SDL_Log("%s error: %s", msg, SDL_GetError());
+}
 
-struct SDL_Destroyer {
+
+struct SdlDestroyer {
     void operator()(SDL_Window* w) const { SDL_DestroyWindow(w); }
     void operator()(SDL_Renderer* r) const { SDL_DestroyRenderer(r); }
 };
-using WindowPtr = std::unique_ptr<SDL_Window, SDL_Destroyer>;
-using RendererPtr = std::unique_ptr<SDL_Renderer, SDL_Destroyer>;
+using WindowPtr = std::unique_ptr<SDL_Window, SdlDestroyer>;
+using RendererPtr = std::unique_ptr<SDL_Renderer, SdlDestroyer>;
 
 int main(int argc, char* argv[]) {
-    SDL_Init(SDL_INIT_VIDEO);
+    bool initialized = SDL_Init(SDL_INIT_VIDEO);
+    if (!initialized) {
+        LogSDLError("SDL_Init");
+        return 1;
+    }
 
     const char* title = "Pixel Engine";
     const int window_w = 800;
     const int window_h = 600;
     WindowPtr window = WindowPtr(SDL_CreateWindow(title, window_w, window_h, 0));
+    if (!window) {
+        LogSDLError("SDL_CreateWindow");
+        SDL_Quit();
+        return 1;
+    }
     RendererPtr renderer = RendererPtr(SDL_CreateRenderer(window.get(), nullptr));
+    if (!renderer) {
+        LogSDLError("SDL_CreateRenderer");
+        SDL_Quit();
+        return 1;
+    }
 
+    bool running = true;
     while(running){
         SDL_Event event;
         while(SDL_PollEvent(&event)){
