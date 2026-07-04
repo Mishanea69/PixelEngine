@@ -14,12 +14,18 @@ bool Engine::Init(const char* title, int width, int height) {
         return false;
     }
 
-    renderer = RendererPtr(SDL_CreateRenderer(window.get(), nullptr));
-    if (!renderer) {
-        SDL_Log("SDL_CreateRenderer error: %s", SDL_GetError());
+    if (!renderer.Init(window.get())) {
+        SDL_Log("Renderer initialization failed");
         SDL_Quit();
         return false;
     }
+
+    if (!assetManager.Init()) {
+        SDL_Log("AssetManager initialization failed");
+        SDL_Quit();
+        return false;
+    }
+    textureManager.Init(renderer.Get(), &assetManager);
 
     running = true;
     return true;
@@ -69,17 +75,19 @@ void Engine::Run() {
 }
 
 void Engine::ChangeState(GameStatePtr newState) {
-    if(currentState) currentState->OnExit();
-    if(newState) newState->OnEnter();
+    if(currentState) currentState->OnExit(ctx);
+    if(newState) newState->OnEnter(ctx);
     currentState = std::move(newState);
 }
 
 void Engine::Update(double dt) {
-    currentState->Update(dt);
+    currentState->Update(ctx, dt);
 }
 
 void Engine::Render(double alpha) {
-    currentState->Render(renderer.get(), alpha);
+    renderer.Clear();
+    currentState->Render(ctx, alpha);
+    renderer.Present();
 }
 
 Engine::~Engine() {
