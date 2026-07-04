@@ -7,10 +7,11 @@
 void RunningState::OnEnter(EngineContext& ctx) {
     // Initialization code for the running state
     SDL_Log("Engine is running.");
+    ctx.renderer.SetBackgroundColor(100, 100, 100, 255); // Set background color to gray
 
     heartSprite.texture = ctx.textureManager.LoadTexture("textures/heart.png");
-    heartSprite.x = 100.0f;
-    heartSprite.y = 100.0f;
+    heartSprite.x = 0.0f;
+    heartSprite.y = 0.0f;
 }
 
 void RunningState::OnExit(EngineContext& ctx) {
@@ -20,6 +21,7 @@ void RunningState::OnExit(EngineContext& ctx) {
 
 void RunningState::Update(EngineContext& ctx, double dt) {
     // Update logic for the running state
+    ctx.renderer.GetCamera().x += 5.0f * dt; // Move camera to the right at 5 units per second
 }
 
 void RunningState::Render(EngineContext& ctx, double alpha) {

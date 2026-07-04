@@ -7,6 +7,9 @@ bool Renderer::Init(SDL_Window* window) {
         SDL_Quit();
         return false;
     }
+    SDL_SetRenderLogicalPresentation(renderer.get(), LogicalWidth, LogicalHeight, SDL_LOGICAL_PRESENTATION_INTEGER_SCALE);
+
+
     return true;
 }
 
@@ -18,12 +21,16 @@ void Renderer::Present() {
     SDL_RenderPresent(renderer.get());
 }
 
+void Renderer::SetBackgroundColor(Uint8 r, Uint8 g, Uint8 b, Uint8 a) {
+    SDL_SetRenderDrawColor(renderer.get(), r, g, b, a);
+}
+
 void Renderer::DrawSprite(const Sprite& sprite) {
     if (!sprite.texture) return;
 
     SDL_FRect dest{
-        sprite.x,
-        sprite.y,
+        sprite.x - camera.x,
+        sprite.y - camera.y,
         static_cast<float>(sprite.texture->w),
         static_cast<float>(sprite.texture->h)
     };

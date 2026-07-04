@@ -4,7 +4,7 @@
 int main(int argc, char* argv[]) {
 
     Engine engine;
-    if (!engine.Init("Pixel Engine", 800, 600)) {
+    if (!engine.Init("Pixel Engine", 960, 540)) {
         return 1;
     }
 
