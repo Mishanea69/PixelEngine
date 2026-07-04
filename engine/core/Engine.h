@@ -7,6 +7,7 @@
 #include <renderer/Renderer.h>
 #include <renderer/TextureManager.h>
 #include <assets/AssetManager.h>
+#include <input/InputManager.h>
 #include <memory>
 
 
@@ -27,6 +28,7 @@ class Engine {
     Renderer renderer;
     TextureManager textureManager;
     AssetManager assetManager;
+    InputManager inputManager;
     EngineContext ctx;
 
     void Update(double dt);
@@ -34,7 +36,7 @@ class Engine {
     void ChangeState(GameStatePtr newState);
 
 public:
-    Engine() : ctx{renderer, textureManager, assetManager} {}
+    Engine() : ctx{renderer, textureManager, assetManager, inputManager} {}
     ~Engine();
 
     bool Init(const char* title, int width, int height);

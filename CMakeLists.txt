@@ -36,6 +36,7 @@ add_executable(PixelEngine
     engine/renderer/Renderer.cpp
     engine/renderer/TextureManager.cpp
     engine/assets/AssetManager.cpp
+    engine/input/InputManager.cpp
 )
 
 target_include_directories(PixelEngine PRIVATE

@@ -48,6 +48,8 @@ void Engine::Run() {
                 running = false;
             }
         }
+        //Check for input events
+        inputManager.Update();
 
         // Update and render
         double frameTime = time.Tick();
