@@ -34,12 +34,12 @@ void RunningState::OnExit(EngineContext& ctx) {
 
 void RunningState::Update(EngineContext& ctx, double dt) {
     // Update logic for the running state
-
+    float ZoomStepRatio = 1.25f;
     if (ctx.inputManager.IsActionPressed("zoom_in")) {
-        ctx.renderer.GetCamera().SetZoom(ctx.renderer.GetCamera().zoom + 1.0f);
+        ctx.renderer.GetCamera().SetZoom(ctx.renderer.GetCamera().zoom * ZoomStepRatio);
     }
     if (ctx.inputManager.IsActionPressed("zoom_out")) {
-        ctx.renderer.GetCamera().SetZoom(ctx.renderer.GetCamera().zoom - 1.0f);
+        ctx.renderer.GetCamera().SetZoom(ctx.renderer.GetCamera().zoom / ZoomStepRatio);
     }
 }
 

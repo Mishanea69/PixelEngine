@@ -23,10 +23,11 @@ struct Camera {
     }
 
     void SetZoom(float newZoom) {
-        if (newZoom <= 0.0f) newZoom = 0.25f; // Prevent zoom from being zero or negative
+        if (newZoom < 0.25f) newZoom = 0.25f; // Prevent zoom from being zero or negative
         if (newZoom > 4.0f) newZoom = 4.0f; // Limit maximum zoom level
         zoom = newZoom;
 
+        SDL_Log("Camera: Zoom set to %.2f", zoom);
         // Snap immediately instead of drifting through the lerp — zoom changes
         // should feel instant, unlike normal movement-follow smoothing.
         float visibleWidth = width / zoom;
