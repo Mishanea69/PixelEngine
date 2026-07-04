@@ -1,10 +1,12 @@
 #pragma once
 
 #include <core/GameState.h>
-#include <renderer/Sprite.h>
+#include <entity/Entity.h>
+#include <world/Tilemap.h>
 
 class RunningState : public GameState {
-    Sprite heartSprite;
+    Entity heart;
+    TileMap tileMap;
 public:
     void OnEnter(EngineContext& ctx) override;
     void OnExit(EngineContext& ctx) override;

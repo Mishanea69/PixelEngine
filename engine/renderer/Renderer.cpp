@@ -9,6 +9,8 @@ bool Renderer::Init(SDL_Window* window) {
     }
     SDL_SetRenderLogicalPresentation(renderer.get(), LogicalWidth, LogicalHeight, SDL_LOGICAL_PRESENTATION_INTEGER_SCALE);
 
+    camera.width = static_cast<float>(LogicalWidth);
+    camera.height = static_cast<float>(LogicalHeight);
 
     return true;
 }
@@ -25,15 +27,21 @@ void Renderer::SetBackgroundColor(Uint8 r, Uint8 g, Uint8 b, Uint8 a) {
     SDL_SetRenderDrawColor(renderer.get(), r, g, b, a);
 }
 
-void Renderer::DrawSprite(const Sprite& sprite) {
+void Renderer::DrawSprite(const Sprite& sprite, const Transform& transform) {
     if (!sprite.texture) return;
 
     SDL_FRect dest{
-        sprite.x - camera.x,
-        sprite.y - camera.y,
+        transform.x - camera.x, 
+        transform.y - camera.y,
         static_cast<float>(sprite.texture->w),
         static_cast<float>(sprite.texture->h)
     };
+
+    bool hasSourceRect = sprite.sourceRect.w > 0 && sprite.sourceRect.h > 0;
+    if (hasSourceRect) {
+        dest.w = sprite.sourceRect.w;
+        dest.h = sprite.sourceRect.h;
+    }
     
-    SDL_RenderTexture(renderer.get(), sprite.texture, nullptr, &dest);
+    SDL_RenderTexture(renderer.get(), sprite.texture, hasSourceRect ? &sprite.sourceRect : nullptr, &dest);
 }

@@ -4,6 +4,5 @@
 
 struct Sprite {
     SDL_Texture* texture = nullptr;
-    float x = 0.0f;
-    float y = 0.0f;
+    SDL_FRect sourceRect{};
 };

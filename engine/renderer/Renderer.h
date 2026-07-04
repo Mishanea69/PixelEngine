@@ -1,6 +1,7 @@
 #pragma once
 
 #include <SDL3/SDL.h>
+#include <entity/Transform.h>
 #include <renderer/Sprite.h>
 #include <renderer/Camera.h>
 #include <memory>
@@ -27,5 +28,5 @@ public:
     void Clear();
     void Present();
     void SetBackgroundColor(Uint8 r, Uint8 g, Uint8 b, Uint8 a);
-    void DrawSprite(const Sprite& sprite);
+    void DrawSprite(const Sprite& sprite, const Transform& transform);
 };

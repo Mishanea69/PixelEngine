@@ -18,6 +18,12 @@ FetchContent_Declare(
     GIT_TAG release-3.4.4
     GIT_SHALLOW TRUE
 )
+FetchContent_Declare(
+    json
+    GIT_REPOSITORY https://github.com/nlohmann/json.git
+    GIT_TAG v3.11.3
+    GIT_SHALLOW TRUE
+)
 
 set(SDL_SHARED ON CACHE BOOL "" FORCE)
 set(SDL_STATIC OFF CACHE BOOL "" FORCE)
@@ -25,6 +31,7 @@ set(SDLIMAGE_AVIF OFF CACHE BOOL "" FORCE)
 
 FetchContent_MakeAvailable(SDL3)
 FetchContent_MakeAvailable(SDL3_image)
+FetchContent_MakeAvailable(json)
 
 add_executable(PixelEngine
     game/main.cpp
@@ -37,13 +44,14 @@ add_executable(PixelEngine
     engine/renderer/TextureManager.cpp
     engine/assets/AssetManager.cpp
     engine/input/InputManager.cpp
+    engine/world/Tilemap.cpp
 )
 
 target_include_directories(PixelEngine PRIVATE
     ${CMAKE_SOURCE_DIR}/engine
 )
 
-target_link_libraries(PixelEngine PRIVATE SDL3::SDL3 SDL3_image::SDL3_image)
+target_link_libraries(PixelEngine PRIVATE SDL3::SDL3 SDL3_image::SDL3_image nlohmann_json::nlohmann_json)
 
 add_custom_command(TARGET PixelEngine POST_BUILD
     COMMAND ${CMAKE_COMMAND}
