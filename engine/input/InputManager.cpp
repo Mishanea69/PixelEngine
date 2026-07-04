@@ -17,17 +17,33 @@ void InputManager::Update() {
 }
 
 void InputManager::BindKey(const std::string& action, SDL_Scancode key) {
-    bindings[action] = key;
+    auto it = bindings.find(action);
+    if (it != bindings.end()) {
+        for(SDL_Scancode scancode : it->second){
+            if (key == scancode){
+                SDL_Log("InputManager: key <%s> already binded to action [%s]", SDL_GetScancodeName(key), action.c_str());
+                return;
+            }
+        }
+        SDL_Log("InputManager: Binded key<%s> to action [%s]", SDL_GetScancodeName(key), action.c_str());
+        it->second.push_back(key);
+    } else {
+        SDL_Log("InputManager: Binded key<%s> to action [%s]", SDL_GetScancodeName(key), action.c_str());
+        bindings[action] = {key};
+    }
 }
 void InputManager::BindKey(const std::string& action, std::string key) {
-    bindings[action] = static_cast<SDL_Scancode>(KeyResolution(key));
+    BindKey(action, static_cast<SDL_Scancode>(KeyResolution(key)));
 }
 
 bool InputManager::IsActionHeld(const std::string& action) {
     auto it = bindings.find(action);
     if (it != bindings.end()) {
-        int keycode = it->second;
-        return currentKeyStates[keycode];
+        for (SDL_Scancode scancode : it->second) {
+            if (currentKeyStates[scancode]) {
+                return true;
+            }
+        }
     }
     return false;
 }
@@ -35,8 +51,11 @@ bool InputManager::IsActionHeld(const std::string& action) {
 bool InputManager::IsActionPressed(const std::string& action) {
     auto it = bindings.find(action);
     if (it != bindings.end()) {
-        int keycode = it->second;
-        return currentKeyStates[keycode] && !previousKeyStates[keycode];
+        for (SDL_Scancode scancode : it->second) {
+            if (currentKeyStates[scancode] && !previousKeyStates[scancode]) {
+                return true;
+            }
+        }
     }
     return false;
 }
@@ -44,57 +63,38 @@ bool InputManager::IsActionPressed(const std::string& action) {
 bool InputManager::IsActionReleased(const std::string& action) {
     auto it = bindings.find(action);
     if (it != bindings.end()) {
-        int keycode = it->second;
-        return !currentKeyStates[keycode] && previousKeyStates[keycode];
+        for (SDL_Scancode scancode : it->second) {
+            if (!currentKeyStates[scancode] && previousKeyStates[scancode]) {
+                return true;
+            }
+        }
     }
     return false;
 }
-
-bool InputManager::IsKeyHeld(std::string key) {
-    int keycode = KeyResolution(key);
-    return currentKeyStates[keycode];
-}
-
-bool InputManager::IsKeyPressed(std::string key) {
-    int keycode = KeyResolution(key);
-    return currentKeyStates[keycode] && !previousKeyStates[keycode];
-}
-
-bool InputManager::IsKeyReleased(std::string key) {
-    int keycode = KeyResolution(key);
-    return !currentKeyStates[keycode] && previousKeyStates[keycode];
-}
-
-
-
-// void InputManager::HandleEvent(const SDL_Event& event) {
-//     // Handle input events
-// }
 
 
 // == Helper Funtions =============================================================================================================
 
 int InputManager::KeyResolution(std::string key) {
-    // Convert string representation of key to SDL_Scancode
-    // 1. convert to lowwercase
-    std::transform(key.begin(), key.end(), key.begin(), [](unsigned char c) { return std::tolower(c); });
+    SDL_Scancode scancode = SDL_GetScancodeFromName(key.c_str());
+    if (scancode == SDL_SCANCODE_UNKNOWN) {
+        // Check custom names:
+        std::string initialKey = key;
+        std::transform(key.begin(), key.end(), key.begin(), ::toupper);
+    
+        if(key == "SPACE") return SDL_SCANCODE_SPACE;
+        if(key == "ESC" || key == "ESCAPE") return SDL_SCANCODE_ESCAPE;
+        if(key == "CTRL" || key == "CONTROL") return SDL_SCANCODE_LCTRL;
+        if(key == "SHIFT") return SDL_SCANCODE_LSHIFT;
+        if(key == "TAB") return SDL_SCANCODE_TAB;
+        if(key == "CAPS" || key == "CAPSLOCK") return SDL_SCANCODE_CAPSLOCK;
+        if(key == "UP" || key == "ARROW_UP") return SDL_SCANCODE_UP;
+        if(key == "DOWN" || key == "ARROW_DOWN") return SDL_SCANCODE_DOWN;
+        if(key == "LEFT" || key == "ARROW_LEFT") return SDL_SCANCODE_LEFT;
+        if(key == "RIGHT" || key == "ARROW_RIGHT") return SDL_SCANCODE_RIGHT;
 
-    if (key.length() == 1) {
-        char c = key[0];
-        if (c >= 'a' && c <= 'z') {
-            return SDL_SCANCODE_A + (c - 'a');
-        }
-
-        if (c >= '1' && c <= '9') {
-            return SDL_SCANCODE_1 + (c - '1'); // Map '1'-'9' to SDL_SCANCODE_1 - SDL_SCANCODE_9
-        } else if (c == '0') {
-            return SDL_SCANCODE_0; // Map '0' to SDL_SCANCODE_0
-        }
-    } else {
-        // Handle special keys
+        SDL_Log("KeyResolution: Unrecognized key string '%s'", initialKey.c_str());
     }
 
-
-    SDL_Log("KeyResolution: Unrecognized key string '%s'", key.c_str());
-    return 0; 
+    return scancode; 
 }

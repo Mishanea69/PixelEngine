@@ -6,7 +6,7 @@
 #include <vector>
 
 class InputManager {
-    std::unordered_map<std::string, SDL_Scancode> bindings;
+    std::unordered_map<std::string, std::vector<SDL_Scancode>> bindings;
     std::vector<bool> currentKeyStates;
     std::vector<bool> previousKeyStates;
 
@@ -19,10 +19,6 @@ public:
     void Update();
     void BindKey(const std::string& action, SDL_Scancode key);
     void BindKey(const std::string& action, std::string key);
-
-    bool IsKeyHeld(std::string key);
-    bool IsKeyPressed(std::string key);
-    bool IsKeyReleased(std::string key);
 
     bool IsActionHeld(const std::string& action);
     bool IsActionPressed(const std::string& action);
