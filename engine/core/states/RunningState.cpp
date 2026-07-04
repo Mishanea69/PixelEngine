@@ -8,8 +8,8 @@ void RunningState::OnEnter(EngineContext& ctx) {
     ctx.renderer.SetBackgroundColor(100, 100, 100, 255); // Set background color to gray
 
     heart.sprite = Sprite{ ctx.textureManager.LoadTexture("textures/heart.png")};
-    heart.transform.x = 50.0f;
-    heart.transform.y = 50.0f;
+    heart.transform.x = 400.0f;
+    heart.transform.y = 300.0f;
 
     // Bind keys for movement actions
     ctx.inputManager.BindKey("move_right", SDL_SCANCODE_RIGHT);
@@ -21,7 +21,7 @@ void RunningState::OnEnter(EngineContext& ctx) {
     ctx.inputManager.BindKey("move_up", "W");
     ctx.inputManager.BindKey("move_down", "S"); 
 
-    tileMap.Load(ctx.assetManager, ctx.textureManager, "tilemaps/testmap/test-tilemap.tmj");
+    tileMap.Load(ctx.assetManager, ctx.textureManager, ctx.renderer, "tilemaps/testmap/test-tilemap.tmj");
 }
 
 void RunningState::OnExit(EngineContext& ctx) {

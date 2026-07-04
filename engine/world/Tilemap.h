@@ -12,8 +12,11 @@ struct TileLayer {
 };
 
 class TileMap {
+    bool Bake(Renderer&);
+    TexturePtr bakedTexture;
+
 public:
-    bool Load(AssetManager& assetManager, TextureManager& textureManager, const std::string mapPath);
+    bool Load(AssetManager& assetManager, TextureManager& textureManager, Renderer& renderer, const std::string mapPath);
     void Render(Renderer& renderer) const;
 
     int width = 0;

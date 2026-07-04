@@ -1,9 +1,10 @@
 #include <world/Tilemap.h>
 #include <nlohmann/json.hpp>
 #include <fstream>
+#include <algorithm>
 using json = nlohmann::json;
 
-bool TileMap::Load(AssetManager& assetManager, TextureManager& textureManager, const std::string mapPath){
+bool TileMap::Load(AssetManager& assetManager, TextureManager& textureManager, Renderer& renderer, const std::string mapPath){
     std::string path = assetManager.GetAssetPath(mapPath);
     std::ifstream file(path);
     if (!file.is_open()){
@@ -45,10 +46,33 @@ bool TileMap::Load(AssetManager& assetManager, TextureManager& textureManager, c
         return false;
     }
 
+    if(!Bake(renderer)){
+        SDL_Log("TileMap: failed to bake tilemap");
+        return false;
+    }
+
     return true;
 }
 
-void TileMap::Render(Renderer& renderer) const {
+bool TileMap::Bake(Renderer& renderer) {
+    int pixelWidth = width * tileset.tileWidth;
+    int pixelHeight = height * tileset.tileHeight;
+
+    bakedTexture = TexturePtr(SDL_CreateTexture(renderer.Get(), SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, pixelWidth, pixelHeight));
+    if (!bakedTexture) {
+        SDL_Log("TileMap: failed to create baked texture");
+        return false;
+    }
+
+    Uint8 savedR, savedG, savedB, savedA;
+    SDL_GetRenderDrawColor(renderer.Get(), &savedR, &savedG, &savedB, &savedA);
+
+    SDL_SetTextureScaleMode(bakedTexture.get(), SDL_SCALEMODE_NEAREST);
+    SDL_SetTextureBlendMode(bakedTexture.get(), SDL_BLENDMODE_BLEND);
+    SDL_SetRenderTarget(renderer.Get(), bakedTexture.get());
+    SDL_SetRenderDrawColor(renderer.Get(), 0, 0, 0, 0);
+    SDL_RenderClear(renderer.Get());
+
     for(const auto& layer : layers){
         for(int y = 0; y < height; y++){
             for(int x = 0; x < width; x++){
@@ -67,4 +91,12 @@ void TileMap::Render(Renderer& renderer) const {
             }
         }
     }
+   
+    SDL_SetRenderTarget(renderer.Get(), nullptr);
+    SDL_SetRenderDrawColor(renderer.Get(), savedR, savedG, savedB, savedA);
+    return true;
+}
+
+void TileMap::Render(Renderer& renderer) const {
+    if(bakedTexture) renderer.DrawSprite(Sprite{bakedTexture.get()}, Transform{0.0f, 0.0f});
 }
