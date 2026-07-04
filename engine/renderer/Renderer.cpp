@@ -42,6 +42,11 @@ void Renderer::DrawSprite(const Sprite& sprite, const Transform& transform) {
         dest.w = sprite.sourceRect.w;
         dest.h = sprite.sourceRect.h;
     }
-    
+
+    dest.x *= camera.zoom;
+    dest.y *= camera.zoom;
+    dest.w *= camera.zoom;
+    dest.h *= camera.zoom;
+
     SDL_RenderTexture(renderer.get(), sprite.texture, hasSourceRect ? &sprite.sourceRect : nullptr, &dest);
 }

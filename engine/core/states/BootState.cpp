@@ -15,6 +15,10 @@ void BootState::Update(EngineContext& ctx, double dt) {
     // Update logic for the boot state
 }
 
+void BootState::FixedUpdate(EngineContext& ctx, double dt) {
+    // Fixed update logic for the boot state
+}
+
 void BootState::Render(EngineContext& ctx, double alpha) {
     // Render logic for the boot state
 }

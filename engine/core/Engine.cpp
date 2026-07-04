@@ -7,7 +7,7 @@ bool Engine::Init(const char* title, int width, int height) {
         return false;
     }
 
-    window = WindowPtr(SDL_CreateWindow(title, width, height, 0));
+    window = WindowPtr(SDL_CreateWindow(title, width, height, SDL_WINDOW_RESIZABLE));
     if (!window) {
         SDL_Log("SDL_CreateWindow error: %s", SDL_GetError());
         SDL_Quit();
@@ -26,6 +26,9 @@ bool Engine::Init(const char* title, int width, int height) {
         return false;
     }
     textureManager.Init(renderer.Get(), &assetManager);
+
+    // Bind the fullscreen toggle action to F11
+    inputManager.BindKey("toggle_fullscreen", SDL_SCANCODE_F11);
 
     running = true;
     return true;
@@ -59,14 +62,15 @@ void Engine::Run() {
         fpsTimer += frameTime;
         fpsFrameCount++;
         if(fpsTimer >= 1.0){
-            SDL_Log("FPS: %d", fpsFrameCount);
+            // SDL_Log("FPS: %d", fpsFrameCount);
             fpsFrameCount = 0;
             fpsTimer -= 1.0;
         }
 
+        Update(frameTime);
         while(accumulator >= targetFrameTime){
             accumulator -= targetFrameTime;
-            Update(targetFrameTime);
+            FixedUpdate(targetFrameTime);
         }
 
         double alpha = accumulator / targetFrameTime;
@@ -84,12 +88,27 @@ void Engine::ChangeState(GameStatePtr newState) {
 
 void Engine::Update(double dt) {
     currentState->Update(ctx, dt);
+    
+    if (inputManager.IsActionPressed("toggle_fullscreen")) {
+        ToggleFullscreen();
+    }
+}
+
+void Engine::FixedUpdate(double dt) {
+    currentState->FixedUpdate(ctx, dt);
 }
 
 void Engine::Render(double alpha) {
     renderer.Clear();
     currentState->Render(ctx, alpha);
     renderer.Present();
+}
+
+void Engine::ToggleFullscreen() {
+    isFullscreen = !isFullscreen;
+    if (!SDL_SetWindowFullscreen(window.get(), isFullscreen)) {
+        SDL_Log("SDL_SetWindowFullscreen error: %s", SDL_GetError());
+    }
 }
 
 Engine::~Engine() {

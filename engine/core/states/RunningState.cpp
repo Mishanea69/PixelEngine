@@ -21,6 +21,9 @@ void RunningState::OnEnter(EngineContext& ctx) {
     ctx.inputManager.BindKey("move_up", "W");
     ctx.inputManager.BindKey("move_down", "S"); 
 
+    ctx.inputManager.BindKey("zoom_in", SDL_SCANCODE_EQUALS);
+    ctx.inputManager.BindKey("zoom_out", SDL_SCANCODE_MINUS);
+
     tileMap.Load(ctx.assetManager, ctx.textureManager, ctx.renderer, "tilemaps/testmap/test-tilemap.tmj");
 }
 
@@ -31,6 +34,17 @@ void RunningState::OnExit(EngineContext& ctx) {
 
 void RunningState::Update(EngineContext& ctx, double dt) {
     // Update logic for the running state
+
+    if (ctx.inputManager.IsActionPressed("zoom_in")) {
+        ctx.renderer.GetCamera().SetZoom(ctx.renderer.GetCamera().zoom + 1.0f);
+    }
+    if (ctx.inputManager.IsActionPressed("zoom_out")) {
+        ctx.renderer.GetCamera().SetZoom(ctx.renderer.GetCamera().zoom - 1.0f);
+    }
+}
+
+void RunningState::FixedUpdate(EngineContext& ctx, double dt) {
+    // Fixed update logic for the running state
 
     float moveSpeed = 50.0f;
     if (ctx.inputManager.IsActionHeld("move_right")) {

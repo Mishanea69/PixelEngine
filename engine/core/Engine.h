@@ -31,7 +31,11 @@ class Engine {
     InputManager inputManager;
     EngineContext ctx;
 
+    bool isFullscreen = false;
+    void ToggleFullscreen();
+
     void Update(double dt);
+    void FixedUpdate(double dt);
     void Render(double alpha = 1.0);
     void ChangeState(GameStatePtr newState);
 

@@ -15,6 +15,10 @@ void ShutDownState::Update(EngineContext& ctx, double dt) {
     // Update logic for the shutdown state
 }
 
+void ShutDownState::FixedUpdate(EngineContext& ctx, double dt) {
+    // Fixed update logic for the shutdown state
+}
+
 void ShutDownState::Render(EngineContext& ctx, double alpha) {
     // Render logic for the shutdown state
 }
