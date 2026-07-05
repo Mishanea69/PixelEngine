@@ -1,5 +1,7 @@
 #pragma once
 
+#include <SDL3/SDL.h>
+
 struct Camera {
     float x = 0.0f;
     float y = 0.0f;

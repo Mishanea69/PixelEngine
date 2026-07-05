@@ -8,6 +8,7 @@ void RunningState::OnEnter(EngineContext& ctx) {
     ctx.renderer.SetBackgroundColor(100, 100, 100, 255); // Set background color to gray
 
     heart.sprite = Sprite{ ctx.textureManager.LoadTexture("textures/heart.png")};
+    heart.sprite->anchor = {0.5f, 0.5f};
     heart.transform.x = 400.0f;
     heart.transform.y = 300.0f;
 

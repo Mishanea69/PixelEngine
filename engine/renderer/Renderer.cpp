@@ -30,18 +30,23 @@ void Renderer::SetBackgroundColor(Uint8 r, Uint8 g, Uint8 b, Uint8 a) {
 void Renderer::DrawSprite(const Sprite& sprite, const Transform& transform) {
     if (!sprite.texture) return;
 
-    SDL_FRect dest{
-        transform.x - camera.x, 
-        transform.y - camera.y,
-        static_cast<float>(sprite.texture->w),
-        static_cast<float>(sprite.texture->h)
-    };
+    float nativeWidth = static_cast<float>(sprite.texture->w);
+    float nativeHeight = static_cast<float>(sprite.texture->h);
 
     bool hasSourceRect = sprite.sourceRect.w > 0 && sprite.sourceRect.h > 0;
     if (hasSourceRect) {
-        dest.w = sprite.sourceRect.w;
-        dest.h = sprite.sourceRect.h;
+        nativeWidth = sprite.sourceRect.w;
+        nativeHeight = sprite.sourceRect.h;
     }
+
+    float scale = ReferenceUnitsPerPixel / sprite.pixelsPerUnit;
+
+    SDL_FRect dest{
+        (transform.x - camera.x - sprite.anchor.x * nativeWidth * scale),
+        (transform.y - camera.y - sprite.anchor.y * nativeHeight * scale),
+        nativeWidth * scale,
+        nativeHeight * scale
+    };
 
     dest.x *= camera.zoom;
     dest.y *= camera.zoom;
